@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./Editor.css"
-import { getFormattedDate } from "../Util";
+import { emotionList, getFormattedDate } from "../Util";
 import Button from "./Button";
 import { useNavigate } from "react-router-dom";
+import Emotionltem from "./Emotionltem";
 
 // props initData -> 입력창 또는 수정창에서 다르게 보여질 입력 내용
 // 수정창 -> 기존에 입력한 내용
@@ -45,6 +46,26 @@ const Editor = ({initData, onSubmit}) => {
         navigate(-1);
     };
 
+    // 이모션 이벤트
+    const handleChangeEmotion = (emotionId) => {
+        setState({
+            ...state,
+            emotionId
+        });
+    };
+
+    useEffect(() => {
+        // initData 존재 여부 확인-> true -> initData props 상위 컴포넌트에서 전달됨
+        // initData가 존재하면 일기 수정, 존재하지 않으면 새 글 쓰기
+        // initData 존재하면 현재 보여지는 내용이 initData의 내용이여야 함
+        if(initData) {
+            setState({
+                ...initData,
+                date : getFormattedDate(new Date(parseInt(initData.date)))
+            });
+        }
+    },[initData]);
+
     return (
         <div className="Editor">
 
@@ -59,6 +80,11 @@ const Editor = ({initData, onSubmit}) => {
             <div className="editor_section">
                 <h4>오늘의 감정</h4>
                 {/* 이미지 선택창 */}
+                <div className="input_wrapper emotion_list_wrapper">
+                    {emotionList.map((item) => (
+                        <Emotionltem key={item.id} {...item} onClick={handleChangeEmotion} isSelected={state.emotionId === item.id} />
+                    ))}
+                </div>
             </div>
 
             <div className="editor_section">
