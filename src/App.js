@@ -1,23 +1,27 @@
-import logo from './logo.svg';
 import './App.css';
+// import {getEmotionImgById} from './Util';
+import { Link, Route,Routes } from 'react-router-dom';
+import Home from './pages/Home';
+import New from './pages/New';
+import Edit from './pages/Edit';
+import Diary from './pages/Diary';
 
 function App() {
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <div>
+        <Link to={"/"}>Home </Link> / 
+        <Link to={"/new"}>New </Link> / 
+        <Link to={"/diary"}>Diary </Link> / 
+        <Link to={"/edit"}>Edit </Link>
+      </div>
+      <hr></hr>
+      <Routes>
+        <Route path="/" element={<Home />}></Route>
+        <Route path="/new" element={<New />}></Route>
+        <Route path="/diary/:id" element={<Diary />}></Route>
+        <Route path="/edit" element={<Edit />}></Route>
+      </Routes>
     </div>
   );
 }
