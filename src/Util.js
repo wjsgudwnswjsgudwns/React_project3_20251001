@@ -22,4 +22,20 @@ export const getEmotionImgById = (emotionId) => {
         default:
             return null;
     }
-}
+};
+
+export const getFormattedDate = (targetDate) => { // yyyy-MM-dd 로 포맷 변경
+    let year = targetDate.getFullYear();
+    let month = targetDate.getMonth() + 1;
+    let date = targetDate.getDate();
+
+    if(month < 10) { // 10보다 작으면 앞에 0을 붙여라
+        month = `0${month}`; // ex) 7 -> 07
+    }
+
+    if(date < 10) {
+        date = `0${date}`;
+    }
+
+    return `${year}-${month}-${date}`;
+};
