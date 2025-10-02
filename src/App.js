@@ -43,19 +43,19 @@ function App() {
   const mockData = [
     {
       id : "mock1",
-      date : new Date().getTime(),
+      date : new Date().getTime()-1,
       content : "mock1이 쓴 일기",
       emotionId : 1
     },
     {
       id : "mock2",
-      date : new Date().getTime(),
+      date : new Date().getTime()-2,
       content : "mock2이 쓴 일기",
       emotionId : 2
     },
     {
       id : "mock3",
-      date : new Date().getTime(),
+      date : new Date().getTime()-3,
       content : "mock3이 쓴 일기",
       emotionId : 1
     }
