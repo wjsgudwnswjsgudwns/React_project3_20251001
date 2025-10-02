@@ -37,7 +37,7 @@ const Home = () => {
             data.filter(
                 (item) => beginTimeStamp <= item.date && item.date <= endTimeStamp
             )
-        )
+        );
         } else {
             setFilteredData([]);
         }
