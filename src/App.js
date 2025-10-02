@@ -5,7 +5,7 @@ import Home from './pages/Home';
 import New from './pages/New';
 import Edit from './pages/Edit';
 import Diary from './pages/Diary';
-import { useEffect, useReducer, useRef } from 'react';
+import React, { useEffect, useReducer, useRef, useState } from 'react';
 
 function reducer (state,action) {
 switch (action.type) {
@@ -29,10 +29,16 @@ switch (action.type) {
     return state;
   }
 
-  
 }
 
+export const DiaryStateContext = React.createContext();
+//Context 생성
+export const DiaryDispatchContext = React.createContext();
+// 자식 컴포넌트에 전달해줄 함수만 분리
+
 function App() {
+
+  const [isDataLoaded,setIsDataLoaded] = useState(false);
 
   const mockData = [
     {
@@ -60,6 +66,7 @@ function App() {
       type : "INIT",
       data : mockData
     })
+    setIsDataLoaded(true);
   },[]) // 최초 마운트 될때만 1회 실행
 
   //const [state,setState] = useState();
@@ -99,24 +106,32 @@ function App() {
       targetId
     });
   };
-
-  return (
-    <div className="App">
-      <div>
-        <Link to={"/"}>Home </Link> / 
-        <Link to={"/new"}>New </Link> / 
-        <Link to={"/diary"}>Diary </Link> / 
-        <Link to={"/edit"}>Edit </Link>
-      </div>
-      <hr></hr>
-      <Routes>
-        <Route path="/" element={<Home />}></Route>
-        <Route path="/new" element={<New />}></Route>
-        <Route path="/diary/:id" element={<Diary />}></Route>
-        <Route path="/edit" element={<Edit />}></Route>
-      </Routes>
-    </div>
-  );
+  if(isDataLoaded) { // true -> 로딩 완, false -> 로딩중
+    return (
+      <DiaryStateContext.Provider value={data}>
+        <DiaryDispatchContext.Provider value={{onCreate,onUpdate,onDelete}}>
+          <div className="App">
+            <div>
+              <Link to={"/"}>Home </Link> / 
+              <Link to={"/new"}>New </Link> / 
+              <Link to={"/diary"}>Diary </Link> / 
+              <Link to={"/edit"}>Edit </Link>
+            </div>
+            <hr></hr>
+            <Routes>
+              <Route path="/" element={<Home />}></Route>
+              <Route path="/new" element={<New />}></Route>
+              <Route path="/diary/:id" element={<Diary />}></Route>
+              <Route path="/edit" element={<Edit />}></Route>
+            </Routes>
+          </div>
+        </DiaryDispatchContext.Provider>
+      </DiaryStateContext.Provider>
+    );
+  } else {
+    return <div>데이터를 불러오는 중입니다</div>
+  }
+  
 }
 
 export default App;

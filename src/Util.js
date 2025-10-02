@@ -67,3 +67,15 @@ export const emotionList = [
         img : getEmotionImgById(5)
     }
 ];
+
+// date -> pivotDate -> 10월 -> 10월1일~10월31일 사이엔 속한 일기만 필터링
+// getMonthRangeByDate -> pivotDate가 인수로 들어오면 해당 월의 시작일과 마지막일만 반환
+export const getMonthRangeByDate = (date) => {
+    const beginTimeStamp = new Date(date.getFullYear(),date.getMonth(),1).getTime(); // (년 , 월 , 일)
+    const endTimeStamp = new Date(
+        date.getFullYear(),
+        date.getMonth(),
+        0,23,59,59 //다음달의 0일의 23시59분59초 -> 이번달의 마지막날
+        ).getTime();
+    return {beginTimeStamp,endTimeStamp};
+}
