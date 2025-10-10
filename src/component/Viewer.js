@@ -3,7 +3,7 @@ import './Viewer.css'
 
 const Viewer = ({ content, emotionId }) => {
 
-    const emotionItem = emotionList.find((item) => emotionId === item.id);
+    const emotionItem = emotionList.find((item) => String(emotionId) === String(item.id));
 
     return (
         <div className="Viewer">

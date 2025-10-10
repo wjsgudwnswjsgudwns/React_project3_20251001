@@ -6,6 +6,8 @@ import New from './pages/New';
 import Edit from './pages/Edit';
 import Diary from './pages/Diary';
 import React, { useEffect, useReducer, useRef, useState } from 'react';
+import axios from 'axios';
+import { type } from '@testing-library/user-event/dist/type';
 
 function reducer (state,action) {
 switch (action.type) {
@@ -40,34 +42,48 @@ function App() {
 
   const [isDataLoaded,setIsDataLoaded] = useState(false);
 
-  const mockData = [
-    {
-      id : "mock1",
-      date : new Date().getTime()-1,
-      content : "mock1이 쓴 일기",
-      emotionId : 1
-    },
-    {
-      id : "mock2",
-      date : new Date().getTime()-2,
-      content : "mock2이 쓴 일기",
-      emotionId : 2
-    },
-    {
-      id : "mock3",
-      date : new Date().getTime()-3,
-      content : "mock3이 쓴 일기",
-      emotionId : 1
-    }
-  ]
+  // const mockData = [
+  //   {
+  //     id : "mock1",
+  //     date : new Date().getTime()-1,
+  //     content : "mock1이 쓴 일기",
+  //     emotionId : 1
+  //   },
+  //   {
+  //     id : "mock2",
+  //     date : new Date().getTime()-2,
+  //     content : "mock2이 쓴 일기",
+  //     emotionId : 2
+  //   },
+  //   {
+  //     id : "mock3",
+  //     date : new Date().getTime()-3,
+  //     content : "mock3이 쓴 일기",
+  //     emotionId : 1
+  //   }
+  // ]
 
+  // useEffect(() => {
+  //   dispatch ({
+  //     type : "INIT",
+  //     data : mockData
+  //   })
+  //   setIsDataLoaded(true);
+  // },[]); // 최초 마운트 될때만 1회 실행
+
+  //데이터 베이스에 저장된 일기 목록 가져오기
   useEffect(() => {
-    dispatch ({
+    axios.get("http://localhost:8888/api/diary")
+    .then((res) => {
+      dispatch ({
       type : "INIT",
-      data : mockData
+      data : res.data
+      });
+      setIsDataLoaded(true);
     })
-    setIsDataLoaded(true);
-  },[]) // 최초 마운트 될때만 1회 실행
+    .catch();
+  },[]);
+
 
   //const [state,setState] = useState();
   const[data,dispatch] = useReducer(reducer, []);
@@ -75,17 +91,27 @@ function App() {
   // data -> [{일기1},{일기2}...]
   const idRef = useRef(0); // 일기의 ID 생성 변수
 
+  // const onCreate = (date, content, emotionId) => {
+  //   dispatch ({
+  //     type : "CREATE",
+  //     data : {
+  //       id : idRef.current,
+  //       date : new Date(date).getTime(),
+  //       content,
+  //       emotionId
+  //     }
+  //   });
+  //   idRef.current++;
+  // };
+
   const onCreate = (date, content, emotionId) => {
-    dispatch ({
-      type : "CREATE",
-      data : {
-        id : idRef.current,
-        date : new Date(date).getTime(),
-        content,
-        emotionId
-      }
-    });
-    idRef.current++;
+    axios.post("http://localhost:8888/api/diary", {date : new Date(date).getTime(),content,emotionId})
+    .then((res) => { // res -> 올바른 응답에 대한 응답 결과 -> db에 삽입된 새 일기
+      dispatch({
+        type : "CREATE",
+        data : res.data
+      })
+    })
   };
 
   const onUpdate = (targetId,date, content, emotionId) => {
