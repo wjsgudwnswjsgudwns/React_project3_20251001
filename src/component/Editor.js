@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import "./Editor.css"
 import { emotionList, getFormattedDate } from "../Util";
 import Button from "./Button";
@@ -47,12 +47,12 @@ const Editor = ({initData, onSubmit}) => {
     };
 
     // 이모션 이벤트
-    const handleChangeEmotion = (emotionId) => {
-        setState({
+    const handleChangeEmotion = useCallback((emotionId) => {
+        setState((state) => ({
             ...state,
             emotionId
-        });
-    };
+        }));
+    }, []);
 
     useEffect(() => {
         // initData 존재 여부 확인-> true -> initData props 상위 컴포넌트에서 전달됨

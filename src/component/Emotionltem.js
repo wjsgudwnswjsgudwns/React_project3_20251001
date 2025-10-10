@@ -1,4 +1,5 @@
 import "./Emotionltem.css"
+import React from "react";
 
 const Emotionltem = ({id, img, name, onClick, isSelected}) => {
 
@@ -14,4 +15,4 @@ const Emotionltem = ({id, img, name, onClick, isSelected}) => {
     )
 }
 
-export default Emotionltem;
+export default React.memo(Emotionltem);

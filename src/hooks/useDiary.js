@@ -11,7 +11,7 @@ const useDiary = (id) => {
     const [diary,setDiary] = useState();
     const navigate = useNavigate();
     useEffect(() => {
-        const matchDiary = data.find((item) => (item.id === id))
+        const matchDiary = data.find((item) => (String(item.id) === String(id)))
         //유저가 클릭한 id와 일치하는 일기 찾기
         
         if (matchDiary) {
