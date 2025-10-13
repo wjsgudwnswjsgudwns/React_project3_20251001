@@ -114,24 +114,48 @@ function App() {
     })
   };
 
+  // const onUpdate = (targetId,date, content, emotionId) => {
+  //   dispatch ({
+  //     type : "UPDATE",
+  //     data : {
+  //       id : targetId,
+  //       date : new Date(date).getTime(),
+  //       content,
+  //       emotionId 
+  //     }
+  //   });
+  // };
+
+  // 일기 수정
   const onUpdate = (targetId,date, content, emotionId) => {
-    dispatch ({
-      type : "UPDATE",
-      data : {
-        id : targetId,
-        date : new Date(date).getTime(),
-        content,
-        emotionId 
-      }
-    });
+    axios.put(`http://localhost:8888/api/diary/${targetId}`, {date : new Date(date).getTime(),content,emotionId})
+    .then((res) => { // res -> 올바른 응답에 대한 응답 결과 -> db에 삽입된 새 일기
+      dispatch({
+        type : "UPDATE",
+        data : res.data
+      })
+    })
   };
 
+  // const onDelete = (targetId) => {
+  //   dispatch ({
+  //     type : "DELETE",
+  //     targetId
+  //   });
+  // };
+
   const onDelete = (targetId) => {
-    dispatch ({
-      type : "DELETE",
-      targetId
-    });
+    axios.delete(`http://localhost:8888/api/diary/${targetId}`)
+    .then(
+      dispatch({
+        type : "DELETE",
+        targetId
+      })
+    )
+    .catch();
   };
+
+
   if(isDataLoaded) { // true -> 로딩 완, false -> 로딩중
     return (
       <DiaryStateContext.Provider value={data}>
