@@ -1,36 +1,37 @@
-import './App.css';
+import "./App.css";
 // import {getEmotionImgById} from './Util';
-import { Link, Route,Routes } from 'react-router-dom';
-import Home from './pages/Home';
-import New from './pages/New';
-import Edit from './pages/Edit';
-import Diary from './pages/Diary';
-import React, { useEffect, useReducer, useRef, useState } from 'react';
-import axios from 'axios';
-import { type } from '@testing-library/user-event/dist/type';
+import { Link, Route, Routes } from "react-router-dom";
+import Home from "./pages/Home";
+import New from "./pages/New";
+import Edit from "./pages/Edit";
+import Diary from "./pages/Diary";
+import React, { useEffect, useReducer, useRef, useState } from "react";
+import axios from "axios";
+import { type } from "@testing-library/user-event/dist/type";
 
-function reducer (state,action) {
-switch (action.type) {
-  case "CREATE": {
-    return [action.data, ...state];
-    // return [새로만든 일기, 기존 일기] -> state = data를 의미
+function reducer(state, action) {
+  switch (action.type) {
+    case "CREATE": {
+      return [action.data, ...state];
+      // return [새로만든 일기, 기존 일기] -> state = data를 의미
+    }
+    case "UPDATE": {
+      return state.map((item) =>
+        // 기존 일기 중에 수정하려고 하는 일기의 아이디를 찾음
+        String(action.data.id) === String(item.id) ? { ...action.data } : item
+      );
+    }
+    case "DELETE": {
+      return state.filter(
+        (item) => String(item.id) !== String(action.targetId)
+      );
+    }
+    case "INIT": {
+      return action.data;
+    }
+    default:
+      return state;
   }
-  case "UPDATE": {
-    return state.map((item) => 
-      // 기존 일기 중에 수정하려고 하는 일기의 아이디를 찾음
-      String(action.data.id) === String(item.id) ? {...action.data} : item
-    );
-  } 
-  case "DELETE": {
-    return state.filter((item) => String(item.id) !== String(action.targetId));
-  }
-  case "INIT": {
-    return action.data;
-  } 
-  default:
-    return state;
-  }
-
 }
 
 export const DiaryStateContext = React.createContext();
@@ -39,8 +40,7 @@ export const DiaryDispatchContext = React.createContext();
 // 자식 컴포넌트에 전달해줄 함수만 분리
 
 function App() {
-
-  const [isDataLoaded,setIsDataLoaded] = useState(false);
+  const [isDataLoaded, setIsDataLoaded] = useState(false);
 
   // const mockData = [
   //   {
@@ -73,20 +73,20 @@ function App() {
 
   //데이터 베이스에 저장된 일기 목록 가져오기
   useEffect(() => {
-    axios.get("http://localhost:8888/api/diary")
-    .then((res) => {
-      dispatch ({
-      type : "INIT",
-      data : res.data
-      });
-      setIsDataLoaded(true);
-    })
-    .catch();
-  },[]);
-
+    axios
+      .get("http://43.203.95.217/api/diary")
+      .then((res) => {
+        dispatch({
+          type: "INIT",
+          data: res.data,
+        });
+        setIsDataLoaded(true);
+      })
+      .catch();
+  }, []);
 
   //const [state,setState] = useState();
-  const[data,dispatch] = useReducer(reducer, []);
+  const [data, dispatch] = useReducer(reducer, []);
   // data -> 일기(일기 객체)들이 들어있는 배열
   // data -> [{일기1},{일기2}...]
   const idRef = useRef(0); // 일기의 ID 생성 변수
@@ -104,14 +104,20 @@ function App() {
   //   idRef.current++;
   // };
 
-  const onCreate = (date, content, emotionId) => {
-    axios.post("http://localhost:8888/api/diary", {date : new Date(date).getTime(),content,emotionId})
-    .then((res) => { // res -> 올바른 응답에 대한 응답 결과 -> db에 삽입된 새 일기
-      dispatch({
-        type : "CREATE",
-        data : res.data
+  const onCreate = async (date, content, emotionId) => {
+    const res = await axios
+      .post("http://43.203.95.217/api/diary", {
+        date: new Date(date).getTime(),
+        content,
+        emotionId,
       })
-    })
+      .then((res) => {
+        // res -> 올바른 응답에 대한 응답 결과 -> db에 삽입된 새 일기
+        dispatch({
+          type: "CREATE",
+          data: res.data,
+        });
+      });
   };
 
   // const onUpdate = (targetId,date, content, emotionId) => {
@@ -121,20 +127,26 @@ function App() {
   //       id : targetId,
   //       date : new Date(date).getTime(),
   //       content,
-  //       emotionId 
+  //       emotionId
   //     }
   //   });
   // };
 
   // 일기 수정
-  const onUpdate = (targetId,date, content, emotionId) => {
-    axios.put(`http://localhost:8888/api/diary/${targetId}`, {date : new Date(date).getTime(),content,emotionId})
-    .then((res) => { // res -> 올바른 응답에 대한 응답 결과 -> db에 삽입된 새 일기
-      dispatch({
-        type : "UPDATE",
-        data : res.data
+  const onUpdate = (targetId, date, content, emotionId) => {
+    axios
+      .put(`http://43.203.95.217/api/diary/${targetId}`, {
+        date: new Date(date).getTime(),
+        content,
+        emotionId,
       })
-    })
+      .then((res) => {
+        // res -> 올바른 응답에 대한 응답 결과 -> db에 삽입된 새 일기
+        dispatch({
+          type: "UPDATE",
+          data: res.data,
+        });
+      });
   };
 
   // const onDelete = (targetId) => {
@@ -145,27 +157,26 @@ function App() {
   // };
 
   const onDelete = (targetId) => {
-    axios.delete(`http://localhost:8888/api/diary/${targetId}`)
-    .then(
-      dispatch({
-        type : "DELETE",
-        targetId
-      })
-    )
-    .catch();
+    axios
+      .delete(`http://43.203.95.217/api/diary/${targetId}`)
+      .then(
+        dispatch({
+          type: "DELETE",
+          targetId,
+        })
+      )
+      .catch();
   };
 
-
-  if(isDataLoaded) { // true -> 로딩 완, false -> 로딩중
+  if (isDataLoaded) {
+    // true -> 로딩 완, false -> 로딩중
     return (
       <DiaryStateContext.Provider value={data}>
-        <DiaryDispatchContext.Provider value={{onCreate,onUpdate,onDelete}}>
+        <DiaryDispatchContext.Provider value={{ onCreate, onUpdate, onDelete }}>
           <div className="App">
             <div>
-              <Link to={"/"}>Home </Link> / 
-              <Link to={"/new"}>New </Link> / 
-              <Link to={"/diary"}>Diary </Link> / 
-              <Link to={"/edit"}>Edit </Link>
+              <Link to={"/"}>Home </Link> /<Link to={"/new"}>New </Link> /
+              <Link to={"/diary"}>Diary </Link> /<Link to={"/edit"}>Edit </Link>
             </div>
             <hr></hr>
             <Routes>
@@ -179,9 +190,8 @@ function App() {
       </DiaryStateContext.Provider>
     );
   } else {
-    return <div>데이터를 불러오는 중입니다</div>
+    return <div>데이터를 불러오는 중입니다</div>;
   }
-  
 }
 
 export default App;
